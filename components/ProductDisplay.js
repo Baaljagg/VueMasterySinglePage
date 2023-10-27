@@ -8,16 +8,15 @@ app.component('product-display', {
     template: 
     /*html*/
     `<div class="product-display">
-    <div class="product-container">
-      <div class="product-image">
-        <img :class = "{'out-of-stock-img': !inStock }"   :src="image">
-      </div>
-      <div class="product-info">
+        <div class="product-container">
+            <div class="product-image">
+             <img :class = "{'out-of-stock-img': !inStock }"   :src="image">
+            </div>
+            <div class="product-info">
 
         <h1>{{ title }}</h1>
 
         <p>{{ sale }}</p>
-
         <a :href="url">Made.....</a>
 
         <!-- <p v-show="inStock">In Stock</p> -->
@@ -31,7 +30,7 @@ app.component('product-display', {
         <p v-else>Out of Stock</p>
 
         <p>Shipping: {{ shipping }} </p>
-        
+        </div>
         <product-details :details="details" ></product-details>
 
         <ul>
@@ -45,7 +44,7 @@ app.component('product-display', {
         <div 
           v-for="(variant, index) in variants" 
           :key="variant.id" 
-          @mouseover="updateImageVariant(index)"
+          @mouseover="updateVariant(index)"
           class="color-circle"
           :style="{ backgroundColor: variant.color }">
         </div>
@@ -54,10 +53,11 @@ app.component('product-display', {
           class="button" 
           :class="{ disabledButton: !inStock }"
           :disabled="!inStock"
-          @click="addToCart">
+          @click="addToCart" @add-to-cart="updateCart">
           Add to Cart
         </button>
-        <button class="button" @click="removeFromCart">Remove item</button>
+        <button class='button'
+        @click='removeFromCart'>Remove item</button>
 
       </div>
     </div>`,
@@ -70,8 +70,8 @@ app.component('product-display', {
             url: 'https://www.google.com',
             details: ['50% cotton', '30% wool', '20% polyester'],
             variants: [
-                { id: 2234, color: "green", image: './assets/images/socks_green.jpg', quantity: 50 },
-                { id: 2235, color: "blue", image: './assets/images/socks_blue.jpg', quantity: 0 },
+                { id: 2234, color: 'green', image: './assets/images/socks_green.jpg', quantity: 50 },
+                { id: 2235, color: 'blue', image: './assets/images/socks_blue.jpg', quantity: 0 },
             ],
             sizes: ["S", "M", "L", "XL"],
 
@@ -104,15 +104,17 @@ app.component('product-display', {
 
     methods: {
         addToCart() {
-            this.cart += 1
+            this.$emit('add-to-cart', this.variants[this.selectedImageVariant].id)
         },
         updateImageVariant(index) {
             this.selectedImageVariant = index
         },
         removeFromCart(){
-            if(this.cart > 0)
-            this.cart -=1
+            this.$emit('remove-from-cart',this.variants[this.selectedImageVariant].id)
         },
+        updateVariant(index) {
+            this.selectedVariant = index
+        }
     }
 
 
